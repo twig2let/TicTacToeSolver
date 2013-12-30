@@ -1,0 +1,125 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="style.css">
+        <title>
+            TicTacToe Master 6000
+        </title>
+
+    </head>
+    <body>
+        <div id="wrapper">
+            <h2>
+                Input Board State:
+            </h2>
+            <div id="boardContainer"></div>
+            <div id="buttons">
+            	<button id="resetBtn">Reset</button>
+            	<button id="checkBtn">Check</button>
+            </div>
+        </div>
+
+		<script type='text/javascript'>
+		    var board = new function() {
+			
+				 var winningCombos = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]];
+		        // var tokens = ['x', 'o'];
+		         var winArray = [];
+		         var potWinComboTracker = [];
+                 var posArray = [];
+
+		        var clickHandler = function(div) {
+		            div.onclick = function() {
+		                div.innerHTML = this.innerHTML === 'x' ? 'o' : 'x';
+		            };
+		        };
+
+		        this.createButtons = function() {
+		            var container = document.getElementById('buttons');
+		            var reset = document.getElementById('resetBtn');
+		            var go = document.getElementById('checkBtn');
+
+		            reset.onclick = function() {
+		                var node = document.getElementById('boardContainer');
+		                while (node.hasChildNodes()) {
+		                    node.removeChild(node.lastChild);
+		                }
+		                board.createBoard();
+		            };
+
+		            go.onclick = function() {
+		                findIt();
+		                showWinningLine();
+		            };
+		            container.appendChild(reset);
+		            container.appendChild(go);
+		        };
+
+		        this.createBoard = function() {
+		            var tmpIndex = 0;
+		            var container = document.getElementById('boardContainer');
+		            do {
+		                var div = document.createElement('div');
+		                div.setAttribute("id", tmpIndex);
+		                clickHandler(div);
+		                container.appendChild(div);
+		                tmpIndex++;
+		            }
+		            while (tmpIndex < 9);
+		        };
+
+		        var findIt = function() {
+		            winArray = [];
+		            var board = document.getElementById('boardContainer');
+
+		            for (var i = 0; i < board.childElementCount; i++) {
+		                var blockVal = board.childNodes[i].innerText;
+		                posArray.push(blockVal);
+		            }
+
+		            for (var i = 0; i < winningCombos.length; i++) {
+		                var weight = 0;
+		                if (posArray[winningCombos[i][0]] === 'x') {
+		                    weight++;
+		                }
+		                if (posArray[winningCombos[i][1]] === 'x') {
+		                    weight++;
+		                }
+		                if (posArray[winningCombos[i][2]] === 'x') {
+		                    weight++;
+		                }
+		                //if 'O' is in suggested win line, omit it from potential wins
+		                validateLine(weight, i);
+		            }
+		        }
+
+		        var validateLine = function(weight, i) {
+		            // now test the matches for overlap in required win blocks, x first
+		            var tmpWinLine = winningCombos[i];
+		            var flag = false;
+		            for (var i = 0; i < tmpWinLine.length; i++) {
+		                if (posArray[tmpWinLine[i]] === 'o') {
+		                    flag = true;
+		                }
+		            }
+		            flag === false ? winArray.push(weight) : winArray.push(0);
+		        }
+
+		        var showWinningLine = function() {
+					var winLine = winArray.indexOf(Math.max.apply(Math, winArray));					
+					var winBlocks = winningCombos[winLine];
+					
+					for (var i = 0; i < winBlocks.length; i++) {
+						var block = document.getElementById(winBlocks[i]);												
+						block.style.backgroundImage = "url(wob.png)";						
+					}
+		        }
+		    };
+		
+		    board.createBoard();
+		    board.createButtons();
+
+		</script>
+    </body>
+</html>
+
